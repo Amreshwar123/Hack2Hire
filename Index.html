@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>TalentSync Engine | Recruiting Analytics</title>
+    <!-- Tailwind CSS CDN + Inter Font + Font Awesome -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Override Tailwind defaults to enforce Inter & ultra-premium feel -->
+    <style>
+        * {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        body {
+            background-color: #f8fafc;
+        }
+        /* custom glassmorphic soft-shadow premium touch */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(0px);
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .premium-shadow {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+        .accent-gradient {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        }
+        .progress-bar-gradient {
+            background: linear-gradient(90deg, #4f46e5, #a855f7);
+        }
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 8px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 8px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        textarea, input {
+            transition: all 0.2s ease;
+        }
+        .card-hover {
+            transition: transform 0.1s ease, box-shadow 0.2s ease;
+        }
+    </style>
+</head>
+<body class="antialiased text-slate-700">
+
+    <!-- MAIN APP CONTAINER: views toggled dynamically -->
+    <div id="appRoot" class="relative min-h-screen w-full">
+
+        <!-- VIEW 1: Clean Minimalist Landing Page -->
+        <div id="viewLanding" class="w-full min-h-screen flex items-center justify-center px-6 transition-all duration-300">
+            <div class="max-w-3xl mx-auto text-center">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/70 border border-slate-200 shadow-sm text-xs font-medium text-indigo-600 mb-6 backdrop-blur-sm">
+                    <i class="fas fa-bolt text-[11px]"></i> <span>AI-Powered Recruitment Suite</span>
+                </div>
+                <h1 class="text-5xl md:text-7xl font-bold tracking-tight bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800 bg-clip-text text-transparent">TalentSync Engine:<br>Automated Recruitment Analytics</h1>
+                <p class="text-lg md:text-xl text-slate-500 mt-6 max-w-2xl mx-auto leading-relaxed">A state-driven evaluation engine syncing candidate profile readiness with real-time interview telemetry.</p>
+                <button id="landingToAuthBtn" class="mt-10 inline-flex items-center gap-3 px-8 py-4 bg-white border border-slate-200 rounded-2xl shadow-sm text-indigo-700 font-semibold text-lg hover:shadow-md hover:border-indigo-200 transition-all group">
+                    <span>Open Analytics Workspace →</span>
+                    <i class="fas fa-arrow-right text-sm group-hover:translate-x-1 transition-transform"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- VIEW 2: Enterprise Portal Login (glassmorphic card) -->
+        <div id="viewAuth" class="w-full min-h-screen flex items-center justify-center p-6 hidden">
+            <div class="w-full max-w-md glass-card rounded-2xl p-8 premium-shadow border border-slate-200/80">
+                <div class="flex justify-center mb-4">
+                    <div class="h-12 w-12 rounded-2xl accent-gradient flex items-center justify-center shadow-md">
+                        <i class="fas fa-shield-alt text-white text-xl"></i>
+                    </div>
+                </div>
+                <h2 class="text-2xl font-bold text-center text-slate-800">Secure Portal Access</h2>
+                <p class="text-center text-slate-500 text-sm mt-1 mb-6">Enterprise credentials required</p>
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 mb-1">Work Email</label>
+                        <div class="relative">
+                            <i class="fas fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                            <input type="email" id="authEmail" class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 transition" placeholder="recruiter@talentsync.com">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 mb-1">Access Key</label>
+                        <div class="relative">
+                            <i class="fas fa-key absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                            <input type="password" id="authPassword" class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 transition" placeholder="••••••••">
+                        </div>
+                    </div>
+                    <button id="authVerifyBtn" class="w-full py-3.5 rounded-xl accent-gradient text-white font-semibold shadow-md hover:opacity-90 transition-all flex items-center justify-center gap-2">Authenticate Console Entry <i class="fas fa-chevron-right text-xs"></i></button>
+                </div>
+                <p class="text-center text-xs text-slate-400 mt-6">Demo: any credentials accepted (mock validation)</p>
+            </div>
+        </div>
+
+        <!-- VIEW 3: The Comprehensive Recruiter Desk (modern left-sidebar + asymmetric layout) -->
+        <div id="viewDashboard" class="hidden w-full min-h-screen bg-[#f8fafc]">
+            <!-- Main container: modern left sidebar + main workspace -->
+            <div class="flex flex-col lg:flex-row h-full lg:min-h-screen">
+                <!-- LEFT SIDEBAR (navigation / brand area) with asymmetric touch -->
+                <div class="lg:w-72 w-full bg-white border-r border-slate-200/80 px-5 py-6 flex flex-col justify-between shadow-sm">
+                    <div>
+                        <div class="flex items-center gap-3 mb-8">
+                            <div class="h-9 w-9 rounded-xl accent-gradient flex items-center justify-center shadow-sm">
+                                <i class="fas fa-chart-line text-white text-sm"></i>
+                            </div>
+                            <span class="font-bold text-xl tracking-tight text-slate-800">TalentSync</span>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-3 px-3 py-2 rounded-lg bg-indigo-50 text-indigo-700 font-medium"><i class="fas fa-tachometer-alt w-5"></i><span>Analytics Engine</span></div>
+                            <div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500 hover:bg-slate-50"><i class="fas fa-address-card w-5"></i><span>Candidates</span></div>
+                            <div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500 hover:bg-slate-50"><i class="fas fa-clipboard-list w-5"></i><span>Evaluations</span></div>
+                        </div>
+                        <div class="mt-8 pt-6 border-t border-slate-100">
+                            <div class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-600"><i class="fas fa-microchip text-indigo-400"></i><span class="text-sm">System Linkage:</span><span id="syncBadge" class="ml-auto text-xs font-medium bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">Synced</span></div>
+                        </div>
+                    </div>
+                    <div class="pt-6">
+                        <button id="logoutDashboardBtn" class="flex items-center gap-2 text-slate-500 hover:text-indigo-600 transition text-sm font-medium"><i class="fas fa-sign-out-alt"></i> Exit workspace</button>
+                    </div>
+                </div>
+
+                <!-- MAIN CONTENT AREA: offset 3-column asymmetric layout (inputs + metrics + telemetry) -->
+                <div class="flex-1 p-6 lg:p-8 overflow-y-auto custom-scroll">
+                    <!-- Header row: sleek brand + logout + pill indicator -->
+                    <div class="flex flex-wrap justify-between items-center mb-8">
+                        <div>
+                            <h1 class="text-2xl font-semibold tracking-tight text-slate-800">Recruiter Workspace</h1>
+                            <p class="text-slate-400 text-sm mt-0.5">Live state evaluation · Interview telemetry core</p>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-1.5 bg-white border border-slate-200 rounded-full px-3 py-1.5 shadow-sm text-xs"><i class="fas fa-circle text-emerald-500 text-[8px]"></i><span class="font-medium text-slate-600">System Linkage: Synced</span></div>
+                            <button id="dashboardLogoutBtn" class="text-slate-400 hover:text-indigo-500 transition"><i class="fas fa-right-from-bracket text-base"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Asymmetric 3-col grid: Left card stack (inputs) | Right side (metrics + progress) -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-7">
+                        <!-- LEFT PANEL (Card stack): takes ~ 1.2fr visual -->
+                        <div class="lg:col-span-1 space-y-6">
+                            <!-- Candidate Resume Profile -->
+                            <div class="bg-white rounded-xl border border-slate-200/80 shadow-sm p-5 premium-shadow">
+                                <label class="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2"><i class="fas fa-user-graduate text-indigo-500"></i> Candidate Resume Profile</label>
+                                <textarea id="resumeTextInput" rows="4" class="w-full border border-slate-200 rounded-lg p-3 text-sm focus:ring-1 focus:ring-indigo-300 resize-none custom-scroll">Skills: JavaScript, TypeScript, Node.js, React, Algorithms, Git, System Design, Docker, PostgreSQL</textarea>
+                            </div>
+                            <!-- Target Job Specification with locked height, scrollbar & resize-none -->
+                            <div class="bg-white rounded-xl border border-slate-200/80 shadow-sm p-5 premium-shadow">
+                                <label class="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2"><i class="fas fa-bullseye text-indigo-500"></i> Target Job Specification (JD)</label>
+                                <textarea id="jdTextInput" rows="5" class="w-full border border-slate-200 rounded-lg p-3 text-sm focus:ring-1 focus:ring-indigo-300 overflow-y-auto resize-none h-36 custom-scroll">Requirements: Looking for a Senior Full-Stack Engineer proficient in JavaScript, React, Node.js, and scalable architecture. Experience designing optimized workflows and integrating database clusters like PostgreSQL is highly desired.</textarea>
+                            </div>
+                            <!-- Structured Telemetry Log (JSON array) -->
+                            <div class="bg-white rounded-xl border border-slate-200/80 shadow-sm p-5 premium-shadow">
+                                <label class="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2"><i class="fas fa-waveform text-indigo-500"></i> Structured Telemetry Log</label>
+                                <textarea id="telemetryInput" rows="5" class="w-full border border-slate-200 rounded-lg p-3 text-xs font-mono focus:ring-1 focus:ring-indigo-300 resize-none custom-scroll">[
+  {"questionId": "q1_sys_design", "accuracy": 85, "clarity": 88, "depth": 78, "relevance": 90, "timeAllowed": 120, "timeTaken": 105},
+  {"questionId": "q2_react_perf", "accuracy": 92, "clarity": 85, "depth": 80, "relevance": 88, "timeAllowed": 90, "timeTaken": 82},
+  {"questionId": "q3_algo_opt", "accuracy": 70, "clarity": 75, "depth": 65, "relevance": 82, "timeAllowed": 100, "timeTaken": 98}
+]</textarea>
+                            </div>
+                            <!-- Execute State Diagnostic button -->
+                            <button id="executeDiagnosticBtn" class="w-full py-3 rounded-xl accent-gradient text-white font-semibold shadow-md hover:shadow-lg transition flex items-center justify-center gap-2 mt-2"><i class="fas fa-microchip"></i> Execute State Diagnostic</button>
+                        </div>
+
+                        <!-- RIGHT METRICS PANEL (Data Telemetry Grid) -->
+                        <div class="lg:col-span-2 space-y-6">
+                            <!-- Overall Hiring Readiness Card -->
+                            <div class="bg-white rounded-xl border border-slate-200/80 shadow-sm p-6 premium-shadow flex flex-col">
+                                <span class="text-sm uppercase tracking-wide text-slate-400 font-medium">Overall Hiring Readiness Indicator</span>
+                                <div class="flex items-baseline gap-2 mt-1">
+                                    <span id="readinessScore" class="text-6xl font-bold text-slate-800 tracking-tight">--</span>
+                                    <span class="text-2xl text-slate-400">/ 100</span>
+                                </div>
+                                <div class="mt-3"><span id="statusBadge" class="inline-flex px-3 py-1 rounded-full text-sm font-medium border bg-slate-50 text-slate-600 border-slate-200">Awaiting sync</span></div>
+                            </div>
+                            <!-- System Telemetry Code Card + state flags -->
+                            <div class="bg-white rounded-xl border border-slate-200/80 shadow-sm p-5">
+                                <div class="flex items-center gap-2 text-sm font-semibold text-slate-700"><i class="fas fa-code text-indigo-500"></i> System Telemetry Code</div>
+                                <div class="mt-2 font-mono text-xs bg-slate-50 p-3 rounded-lg border border-slate-100" id="telemetryCodeFlag">—</div>
+                            </div>
+                            <!-- Granular Attribute Breakdown (progress bars) -->
+                            <div class="bg-white rounded-xl border border-slate-200/80 shadow-sm p-5">
+                                <h3 class="text-sm font-semibold text-slate-700 flex items-center gap-2 mb-4"><i class="fas fa-chart-simple text-indigo-500"></i> Granular Attribute Breakdown</h3>
+                                <div class="space-y-4">
+                                    <div><div class="flex justify-between text-xs text-slate-500 mb-1"><span>Technical Accuracy</span><span id="techAccVal">0</span><span>%</span></div><div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div id="techAccBar" class="h-full progress-bar-gradient rounded-full w-0 transition-all duration-300"></div></div></div>
+                                    <div><div class="flex justify-between text-xs text-slate-500 mb-1"><span>Communication Clarity</span><span id="commClarVal">0</span><span>%</span></div><div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div id="commClarBar" class="h-full progress-bar-gradient rounded-full w-0 transition-all duration-300"></div></div></div>
+                                    <div><div class="flex justify-between text-xs text-slate-500 mb-1"><span>Evaluation Depth</span><span id="evalDepthVal">0</span><span>%</span></div><div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div id="evalDepthBar" class="h-full progress-bar-gradient rounded-full w-0 transition-all duration-300"></div></div></div>
+                                    <div><div class="flex justify-between text-xs text-slate-500 mb-1"><span>Profile Match</span><span id="profileMatchVal">0</span><span>%</span></div><div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div id="profileMatchBar" class="h-full progress-bar-gradient rounded-full w-0 transition-all duration-300"></div></div></div>
+                                </div>
+                            </div>
+                            <!-- Evaluated Strengths & Development Gaps (split footer segment) -->
+                            <div class="grid grid-cols-2 gap-5">
+                                <div class="bg-white rounded-xl border border-slate-200/80 p-4 shadow-sm"><i class="fas fa-check-circle text-indigo-500 mr-2"></i><span class="font-medium text-sm">Evaluated Strengths</span><ul id="strengthsList" class="mt-2 text-xs text-slate-600 space-y-1 list-disc pl-4"><li>—</li></ul></div>
+                                <div class="bg-white rounded-xl border border-slate-200/80 p-4 shadow-sm"><i class="fas fa-arrow-trend-up text-violet-500 mr-2"></i><span class="font-medium text-sm">Development Gaps</span><ul id="gapsList" class="mt-2 text-xs text-slate-600 space-y-1 list-disc pl-4"><li>—</li></ul></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM elements
+        const viewLanding = document.getElementById('viewLanding');
+        const viewAuth = document.getElementById('viewAuth');
+        const viewDashboard = document.getElementById('viewDashboard');
+        const landingBtn = document.getElementById('landingToAuthBtn');
+        const authVerify = document.getElementById('authVerifyBtn');
+        const logoutBtns = [document.getElementById('logoutDashboardBtn'), document.getElementById('dashboardLogoutBtn')];
+        
+        // dashboard dynamic fields
+        const resumeInput = document.getElementById('resumeTextInput');
+        const jdInput = document.getElementById('jdTextInput');
+        const telemetryInput = document.getElementById('telemetryInput');
+        const execBtn = document.getElementById('executeDiagnosticBtn');
+        const readinessSpan = document.getElementById('readinessScore');
+        const statusBadge = document.getElementById('statusBadge');
+        const telemetryFlagSpan = document.getElementById('telemetryCodeFlag');
+        // progress elements
+        const techAccVal = document.getElementById('techAccVal');
+        const commClarVal = document.getElementById('commClarVal');
+        const evalDepthVal = document.getElementById('evalDepthVal');
+        const profileMatchVal = document.getElementById('profileMatchVal');
+        const techAccBar = document.getElementById('techAccBar');
+        const commClarBar = document.getElementById('commClarBar');
+        const evalDepthBar = document.getElementById('evalDepthBar');
+        const profileMatchBar = document.getElementById('profileMatchBar');
+        const strengthsList = document.getElementById('strengthsList');
+        const gapsList = document.getElementById('gapsList');
+
+        // Helper: set active view
+        function setActiveView(viewName) {
+            viewLanding.classList.add('hidden');
+            viewAuth.classList.add('hidden');
+            viewDashboard.classList.add('hidden');
+            if (viewName === 'landing') viewLanding.classList.remove('hidden');
+            if (viewName === 'auth') viewAuth.classList.remove('hidden');
+            if (viewName === 'dashboard') viewDashboard.classList.remove('hidden');
+        }
+
+        // login auth mock -> any credentials
+        authVerify.addEventListener('click', () => {
+            // mock enterprise validation: just simulate success
+            setActiveView('dashboard');
+            // optional: prefill fresh metrics placeholder but keep existing inputs
+        });
+
+        landingBtn.addEventListener('click', () => setActiveView('auth'));
+        logoutBtns.forEach(btn => {
+            if(btn) btn.addEventListener('click', () => setActiveView('landing'));
+        });
+
+        // Helper: parse telemetry JSON safely
+        function parseTelemetry(raw) {
+            try {
+                const parsed = JSON.parse(raw);
+                if (Array.isArray(parsed) && parsed.length) return parsed;
+                return [];
+            } catch(e) { return []; }
+        }
+
+        // Compute metrics based on resume (rough match), JD + telemetry questions
+        function computeMetrics(resumeText, jdText, questionsArray) {
+            // derive base match: profile match based on keyword overlap (simple scoring)
+            const resumeLower = resumeText.toLowerCase();
+            const jdLower = jdText.toLowerCase();
+            const keywords = ['javascript', 'typescript', 'react', 'node.js', 'node', 'postgresql', 'docker', 'algorithms', 'system design', 'scalable'];
+            let matched = 0;
+            keywords.forEach(kw => { if(resumeLower.includes(kw) || jdLower.includes(kw)) matched++; });
+            const profileMatchRaw = Math.min(100, Math.floor((matched / keywords.length) * 100) + 20);
+            const profileMatch = Math.min(100, profileMatchRaw);
+            
+            // Aggregate telemetry metrics from array of question objects
+            let totalAccuracy = 0, totalClarity = 0, totalDepth = 0, count = 0;
+            if(questionsArray.length) {
+                questionsArray.forEach(q => {
+                    totalAccuracy += q.accuracy || 0;
+                    totalClarity += q.clarity || 0;
+                    totalDepth += q.depth || 0;
+                    count++;
+                });
+            }
+            const techAccuracy = count ? Math.round(totalAccuracy / count) : 68;
+            const commClarity = count ? Math.round(totalClarity / count) : 72;
+            const evalDepth = count ? Math.round(totalDepth / count) : 65;
+            // overall readiness: weighted combination 40% profileMatch + 20% techAcc + 20% clarity + 20% depth
+            let readiness = Math.round((profileMatch * 0.4) + (techAccuracy * 0.2) + (commClarity * 0.2) + (evalDepth * 0.2));
+            readiness = Math.min(100, Math.max(0, readiness));
+            
+            let statusCategory = '';
+            let stateFlag = '';
+            if (readiness >= 80) { statusCategory = 'Strong Fit'; stateFlag = 'COMPLETED_SUCCESSFULLY'; }
+            else if (readiness >= 55) { statusCategory = 'Average Match'; stateFlag = 'MODERATE_EVALUATION'; }
+            else { statusCategory = 'Needs Training'; stateFlag = 'EARLY_TERMINATION_LOW_SCORE'; }
+            
+            // strengths & gaps dynamic
+            let strengths = [], gaps = [];
+            if (techAccuracy >= 75) strengths.push('Solid technical accuracy across questions');
+            else gaps.push('Improve coding & system design correctness');
+            if (commClarity >= 75) strengths.push('Excellent communication clarity');
+            else gaps.push('Enhance structured articulation');
+            if (evalDepth >= 70) strengths.push('Strong evaluation depth in answers');
+            else gaps.push('Deepen solution reasoning and examples');
+            if (profileMatch >= 70) strengths.push('Resume aligns with JD core skills');
+            else gaps.push('Bridge skill gaps: add relevant experience');
+            if (strengths.length === 0) strengths.push('Potential in foundational areas');
+            if (gaps.length === 0) gaps.push('Focus on advanced scenario polish');
+            
+            return { readiness, statusCategory, stateFlag, techAccuracy, commClarity, evalDepth, profileMatch, strengths, gaps };
+        }
+
+        // Update Dashboard UI with fresh metrics
+        function updateDashboardUI(metrics) {
+            readinessSpan.innerText = metrics.readiness;
+            statusBadge.innerText = metrics.statusCategory;
+            statusBadge.className = `inline-flex px-3 py-1 rounded-full text-sm font-medium border `;
+            if(metrics.statusCategory === 'Strong Fit') statusBadge.classList.add('bg-emerald-50', 'text-emerald-700', 'border-emerald-200');
+            else if(metrics.statusCategory === 'Average Match') statusBadge.classList.add('bg-amber-50', 'text-amber-700', 'border-amber-200');
+            else statusBadge.classList.add('bg-slate-100', 'text-slate-700', 'border-slate-300');
+            telemetryFlagSpan.innerText = metrics.stateFlag;
+            
+            techAccVal.innerText = metrics.techAccuracy;
+            commClarVal.innerText = metrics.commClarity;
+            evalDepthVal.innerText = metrics.evalDepth;
+            profileMatchVal.innerText = metrics.profileMatch;
+            techAccBar.style.width = `${metrics.techAccuracy}%`;
+            commClarBar.style.width = `${metrics.commClarity}%`;
+            evalDepthBar.style.width = `${metrics.evalDepth}%`;
+            profileMatchBar.style.width = `${metrics.profileMatch}%`;
+            
+            strengthsList.innerHTML = metrics.strengths.map(s => `<li class="flex items-start gap-1"><i class="fas fa-check-circle text-indigo-400 text-[10px] mt-0.5"></i><span>${s}</span></li>`).join('');
+            gapsList.innerHTML = metrics.gaps.map(g => `<li class="flex items-start gap-1"><i class="fas fa-arrow-right text-violet-400 text-[10px] mt-0.5"></i><span>${g}</span></li>`).join('');
+        }
+
+        // fetch call to local Node server (with fallback simulation if server fails)
+        async function executeEvaluation() {
+            const resumeText = resumeInput.value;
+            const jdText = jdInput.value;
+            const telemetryRaw = telemetryInput.value;
+            let questionsArray = parseTelemetry(telemetryRaw);
+            if(!questionsArray.length && telemetryRaw.trim() !== "") {
+                alert("Telemetry JSON seems invalid. Using demo fallback metrics.");
+                questionsArray = [
+                    {questionId: "demo1", accuracy: 80, clarity: 78, depth: 74, relevance: 85, timeAllowed: 120, timeTaken: 100},
+                    {questionId: "demo2", accuracy: 88, clarity: 82, depth: 70, relevance: 86, timeAllowed: 90, timeTaken: 80}
+                ];
+            } else if(questionsArray.length === 0 && !telemetryRaw.trim()){
+                questionsArray = [
+                    {questionId: "default", accuracy: 75, clarity: 70, depth: 68, relevance: 80, timeAllowed: 100, timeTaken: 85}
+                ];
+            }
+            
+            const payload = {
+                resumeText: resumeText,
+                jdText: jdText,
+                questions: questionsArray
+            };
+            
+            // Show loading indicator feedback on button
+            const originalBtnText = execBtn.innerHTML;
+            execBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Analyzing...';
+            execBtn.disabled = true;
+            
+            try {
+                const response = await fetch('http://localhost:3000/evaluate-interview', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if(!response.ok) throw new Error(`HTTP ${response.status}`);
+                const data = await response.json();
+                // Expecting backend to return similar metrics structure: readiness, techAccuracy, etc.
+                const serverMetrics = {
+                    readiness: data.readinessScore ?? 75,
+                    statusCategory: data.statusCategory ?? 'Average Match',
+                    stateFlag: data.stateFlag ?? 'COMPLETED_SUCCESSFULLY',
+                    techAccuracy: data.technicalAccuracy ?? 74,
+                    commClarity: data.communicationClarity ?? 70,
+                    evalDepth: data.evaluationDepth ?? 68,
+                    profileMatch: data.profileMatch ?? 72,
+                    strengths: data.strengthsList ?? ['Backend integration ready'],
+                    gaps: data.developmentGaps ?? ['Optimize real-time response']
+                };
+                updateDashboardUI(serverMetrics);
+            } catch (err) {
+                console.warn("Server unreachable, using local algorithmic evaluation fallback:", err);
+                alert("⚠️ Server at localhost:3000 unavailable. Falling back to local intelligent evaluation.");
+                const fallbackMetrics = computeMetrics(resumeText, jdText, questionsArray);
+                updateDashboardUI(fallbackMetrics);
+            } finally {
+                execBtn.innerHTML = originalBtnText;
+                execBtn.disabled = false;
+            }
+        }
+        
+        execBtn.addEventListener('click', executeEvaluation);
+        
+        // On dashboard load, if default fields exist run a default evaluation (to populate initial elegance)
+        // BUT we also call once after dashboard becomes visible and fields pre-filled.
+        function initialDashboardLoad() {
+            const metricsInit = computeMetrics(resumeInput.value, jdInput.value, parseTelemetry(telemetryInput.value));
+            updateDashboardUI(metricsInit);
+        }
+        // observe when dashboard becomes visible
+        const observer = new MutationObserver(() => {
+            if(!viewDashboard.classList.contains('hidden')) {
+                initialDashboardLoad();
+            }
+        });
+        observer.observe(viewDashboard, { attributes: true, attributeFilter: ['class'] });
+        // if dashboard visible immediately (edge) call once if already visible? but hidden init
+        if(!viewDashboard.classList.contains('hidden')) initialDashboardLoad();
+        else initialDashboardLoad(); // just to set demo defaults but safe.
+    </script>
+</body>
+</html>
